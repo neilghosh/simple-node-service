@@ -1,4 +1,4 @@
-import { fetchData } from "../webProxy.js";
+import { fetchData } from "../webproxy.js";
 import regeneratorRuntime from "regenerator-runtime";
 //import { fetchData } from "../index.js";
 
