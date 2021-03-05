@@ -1,5 +1,5 @@
 import express from "express";
-import { fetchData } from "./webProxy.js";
+import { fetchData } from "./webproxy.js";
 
 const app = express();
 
