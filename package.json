@@ -1,0 +1,23 @@
+{
+  "name": "simple-node-service",
+  "version": "1.0.0",
+  "description": "Simple Node Service",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "core-js": "^3.9.1",
+    "express": "4.17.1"
+  },
+  "devDependencies": {
+    "regenerator-runtime": "^0.13.7",
+    "@babel/preset-env": "*",
+    "jest": "*"
+  }
+}
