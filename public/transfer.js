@@ -91,6 +91,14 @@ function importFile() {
     mutations.push(obj);
   }
 
+  //Split into batches of 500;
+  var mutation_batches = [], size = 500;
+  while (mutations.length > 0)
+    mutation_batches.push(mutations.splice(0, size));
+  mutation_batches.forEach(callDatastore);
+}
+
+function callDatastore(mutationBatch){
   if (params && params["access_token"]) {
     var xhr = new XMLHttpRequest();
     var projectId = document.getElementById("selectProject").value;
@@ -105,9 +113,9 @@ function importFile() {
 
     xhr.onreadystatechange = function (e) {
       if (xhr.readyState === 4 && xhr.status === 200) {
-        console.log(xhr.response);
+        //console.log(xhr.response);
 
-        document.getElementById("out").innerHTML = `imported ${
+        document.getElementById("out").innerHTML = document.getElementById("out").innerHTML+`<br>imported ${
           JSON.parse(xhr.response).mutationResults.length
         } items`;
       } else if (xhr.readyState === 4 && xhr.status === 401) {
@@ -133,7 +141,7 @@ function importFile() {
       `{
       "mode": "NON_TRANSACTIONAL",
       "mutations": ` +
-      JSON.stringify(mutations) +
+      JSON.stringify(mutationBatch) +
       `
     }`;
     xhr.send(obj);
@@ -180,6 +188,75 @@ function loadProjects() {
   }
 }
 
+function loadQuotes() {
+  var params = JSON.parse(localStorage.getItem("oauth2-test-params"));
+  if (params && params["access_token"]) {
+    var xhr = new XMLHttpRequest();
+    var projectId = document.getElementById("selectProject").value;
+    xhr.open(
+      "POST",
+      "https://datastore.googleapis.com/v1/projects/" +
+        projectId +
+        ":runQuery?" +
+        "access_token=" +
+        params["access_token"]
+    );
+    xhr.onreadystatechange = function (e) {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        //console.log(xhr.response);
+        var result = JSON.parse(xhr.response);
+        //Sort by Date
+        var entities = result.batch.entityResults;
+
+        function compare( a, b ) {
+          var a = a.entity.properties.timestamp.timestampValue;
+          var b = b.entity.properties.timestamp.timestampValue;
+
+          if ( a.last_nom < b.last_nom ){
+            return -1;
+          }
+          if ( a.last_nom > b.last_nom ){
+            return 1;
+          }
+          return 0;
+        }
+        
+        entities.sort( compare );
+
+        entities.forEach(renderData);
+      } else if (xhr.readyState === 4 && xhr.status === 401) {
+        // Token invalid, so prompt for user permission.
+        oauth2SignIn();
+      }
+    };
+    // SELECT * FROM `FeedItem`
+    var fromDate = document.getElementById("fromDate").value;
+    var toDate = document.getElementById("toDate").value;
+    var symbol = document.getElementById("symbol").value;
+    var startKey = symbol+fromDate;
+    var endKey = symbol+toDate;
+    //xhr.send('{"gqlQuery":{"allowLiterals":true,"queryString": "SELECT * FROM StockPrices WHERE __key__ > KEY(`StockPrices`, \'SBIN2018-01-01\') AND __key__ < KEY(`StockPrices`, \'SBIN2018-01-07\')"}}');
+    xhr.send('{"gqlQuery":{"allowLiterals":true,"queryString": "SELECT * FROM StockPrices WHERE __key__ > KEY(`StockPrices`, \''+startKey+'\') AND __key__ < KEY(`StockPrices`, \''+endKey+'\')"}}');
+  } else {
+    oauth2SignIn();
+  }
+}
+
+function renderData(entity, index){
+  var prop = entity.entity.properties;
+  //console.log(prop.symbol.stringValue + prop.timestamp.timestampValue + prop.close.doubleValue)
+  // Find a <table> element with id="myTable":
+  var table = document.getElementById("priceOut");
+  // Create an empty <tr> element and add it to the 1st position of the table:
+  var row = table.insertRow(index+1);
+
+  var cell1 = row.insertCell(0);
+  cell1.innerHTML = prop.symbol.stringValue;
+  var cell2 = row.insertCell(1);
+  cell2.innerHTML = prop.timestamp.timestampValue ; 
+  var cell3 = row.insertCell(2);
+  cell3.innerHTML = prop.close.doubleValue ; 
+}
 /*
  * Create form to request access token from Google's OAuth 2.0 server.
  */
@@ -216,3 +293,4 @@ function oauth2SignIn() {
   document.body.appendChild(form);
   form.submit();
 }
+

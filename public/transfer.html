@@ -13,6 +13,18 @@
     <output id="infilerowcount"> In File Count will appear here </output>
     <br>
     <button onclick="importFile();">Import the above selected file</button>
-    <output id="out"> Imported Count Will Appear Here </output>
+    <output id="out"> Imported Count Will Appear below<br> </output>
+    <br>
+    <input type="text" id="symbol" value="SBIN"/>
+    <input type="date" id="fromDate" value="2018-01-01"/>
+    <input type="date" id="toDate" value="2018-01-10"/>
+    <button onclick="loadQuotes();">Read Quote</button>
+    <br>
+    <table id="priceOut" border="1">
+      <th>symbol</th>
+      <th>timestamp</th>
+      <th>close</th>
+    </table>
+    
   </body>
 </html>
