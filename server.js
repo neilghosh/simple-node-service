@@ -2,7 +2,7 @@ import express from "express";
 import { fetchData } from "./webproxy.js";
 
 const app = express();
-
+app.use('/static',express.static('public'))
 app.get("/", (req, res) => {
   console.log(`Request Came ${req.ip}`);
   fetchData()
