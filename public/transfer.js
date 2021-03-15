@@ -21,7 +21,10 @@ if (Object.keys(params).length > 0) {
 window.addEventListener(
   "DOMContentLoaded",
   function () {
-    var params = JSON.parse(localStorage.getItem("oauth2-test-params"));
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.load('current', {'packages':['table']});
+
+    params = JSON.parse(localStorage.getItem("oauth2-test-params"));
 
     //Read the CSV File
     var readFile = function () {
@@ -207,23 +210,11 @@ function loadQuotes() {
         var result = JSON.parse(xhr.response);
         //Sort by Date
         var entities = result.batch.entityResults;
-
-        function compare( a, b ) {
-          var a = a.entity.properties.timestamp.timestampValue;
-          var b = b.entity.properties.timestamp.timestampValue;
-
-          if ( a.last_nom < b.last_nom ){
-            return -1;
-          }
-          if ( a.last_nom > b.last_nom ){
-            return 1;
-          }
-          return 0;
-        }
+        chartData = extractChartData(entities);
+        drawTable(chartData); 
+        drawChart(chartData);
+        //entities.forEach(renderData);
         
-        entities.sort( compare );
-
-        entities.forEach(renderData);
       } else if (xhr.readyState === 4 && xhr.status === 401) {
         // Token invalid, so prompt for user permission.
         oauth2SignIn();
@@ -242,20 +233,74 @@ function loadQuotes() {
   }
 }
 
-function renderData(entity, index){
-  var prop = entity.entity.properties;
-  //console.log(prop.symbol.stringValue + prop.timestamp.timestampValue + prop.close.doubleValue)
-  // Find a <table> element with id="myTable":
-  var table = document.getElementById("priceOut");
-  // Create an empty <tr> element and add it to the 1st position of the table:
-  var row = table.insertRow(index+1);
+function compare( a, b ) {
+  var a = a.entity.properties.timestamp.timestampValue;
+  var b = b.entity.properties.timestamp.timestampValue;
 
-  var cell1 = row.insertCell(0);
-  cell1.innerHTML = prop.symbol.stringValue;
-  var cell2 = row.insertCell(1);
-  cell2.innerHTML = prop.timestamp.timestampValue ; 
-  var cell3 = row.insertCell(2);
-  cell3.innerHTML = prop.close.doubleValue ; 
+  if ( a.last_nom < b.last_nom ){
+    return -1;
+  }
+  if ( a.last_nom > b.last_nom ){
+    return 1;
+  }
+  return 0;
+}
+
+function extractChartData(entities) {
+  entities.sort( compare );
+  var chartData = [];
+  chartData.push(['timestamp', 'low','close', 'open', 'high']);
+
+  for (i = 0; i < entities.length; i++) {
+    var prop = entities[i].entity.properties;
+    chartData.push([
+      prop.timestamp.timestampValue.substring(0, 10),
+      prop.low.doubleValue,
+      prop.close.doubleValue,
+      prop.open.doubleValue,
+      prop.high.doubleValue
+    ]); 
+  }
+  return chartData;
+}
+
+// function renderData(entity, index){
+//   var prop = entity.entity.properties;
+//   //console.log(prop.symbol.stringValue + prop.timestamp.timestampValue + prop.close.doubleValue)
+//   // Find a <table> element with id="myTable":
+//   var table = document.getElementById("priceOut");
+//   // Create an empty <tr> element and add it to the 1st position of the table:
+//   var row = table.insertRow(index+1);
+
+//   var cell1 = row.insertCell(0);
+//   cell1.innerHTML = prop.symbol.stringValue;
+//   var cell2 = row.insertCell(1);
+//   cell2.innerHTML = prop.timestamp.timestampValue ; 
+//   var cell3 = row.insertCell(2);
+//   cell3.innerHTML = prop.close.doubleValue ; 
+// }
+
+function drawChart(chartData) {
+  var data = google.visualization.arrayToDataTable(chartData,true);
+  var options = {
+    legend:'none',
+    title: document.getElementById('symbol').value
+  };
+  var chart = new google.visualization.CandlestickChart(document.getElementById('curve_chart'));
+  chart.draw(data, options);
+}
+
+function drawTable(chartData){
+  var data = new google.visualization.DataTable();
+  data.addColumn('string', chartData[0][0]);
+  data.addColumn('number', chartData[0][1]);
+  data.addColumn('number', chartData[0][2]);
+  data.addColumn('number', chartData[0][3]);
+  data.addColumn('number', chartData[0][4]);      
+  chartData.shift();  
+  data.addRows(chartData);
+  var table = new google.visualization.Table(document.getElementById('table_chart'));
+  table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
 }
 /*
  * Create form to request access token from Google's OAuth 2.0 server.
@@ -294,3 +339,40 @@ function oauth2SignIn() {
   form.submit();
 }
 
+function revokeAccess() {
+  var accessToken;
+  var params = JSON.parse(localStorage.getItem("oauth2-test-params"));
+  if (params) {
+    accessToken = params["access_token"];
+  }
+  localStorage.removeItem("oauth2-test-params");
+  // Google's OAuth 2.0 endpoint for revoking access tokens.
+  var revokeTokenEndpoint = 'https://oauth2.googleapis.com/revoke';
+
+  // Create <form> element to use to POST data to the OAuth 2.0 endpoint.
+  var form = document.createElement('form');
+  form.setAttribute('method', 'post');
+  //form.setAttribute('redirect_to', YOUR_REDIRECT_URI);
+  // form.setAttribute('onsubmit', "window.location.href = 'https://website.com/my-account';");
+
+
+  // var submitField = document.createElement('input');
+  // submitField.setAttribute('type', 'submit');
+  // submitField.setAttribute('onclick', "window.location.href = 'https://website.com/my-account';");
+  // form.appendChild(submitField);
+
+  form.setAttribute('action', revokeTokenEndpoint);
+
+  // Add access token to the form so it is set as value of 'token' parameter.
+  // This corresponds to the sample curl request, where the URL is:
+  //      https://oauth2.googleapis.com/revoke?token={token}
+  var tokenField = document.createElement('input');
+  tokenField.setAttribute('type', 'hidden');
+  tokenField.setAttribute('name', 'token');
+  tokenField.setAttribute('value', accessToken);
+  form.appendChild(tokenField);
+
+  // Add form to page and submit it to actually revoke the token.
+  document.body.appendChild(form);
+  form.submit();
+}
