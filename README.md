@@ -9,4 +9,3 @@ node test
 ```
 node start
 ```
-![2021-03-15](screenshots/ss-2021-03-15.png)
