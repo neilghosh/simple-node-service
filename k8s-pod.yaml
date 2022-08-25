@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: simple-node-app
+spec:
+  containers:
+  - name: simple-node-app
+    image: gcr.io/demoneil/github.com/neilghosh/simple-node-service:latest
