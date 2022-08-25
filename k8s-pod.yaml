@@ -5,4 +5,4 @@ metadata:
 spec:
   containers:
   - name: simple-node-app
-    image: gcr.io/demoneil/github.com/neilghosh/simple-node-service:latest
+    image: my-app-image
