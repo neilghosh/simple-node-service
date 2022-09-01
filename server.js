@@ -8,7 +8,7 @@ app.get("/", (req, res) => {
   fetchData()
     .then((result) => {
       console.log(result.statusCode);
-      res.write('Success code'+result.statusCode);
+      res.write('Success '+result.statusCode);
     })
     .catch((result) => {
       console.log('Failed '+result.statusCode);
