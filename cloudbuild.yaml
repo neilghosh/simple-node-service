@@ -13,8 +13,8 @@ steps:
     args: ['-c', 'docker pull gcr.io/$PROJECT_ID/github.com/neilghosh/simple-node-service:5f298d9 || exit 0']
   - name: 'gcr.io/cloud-builders/docker'
     args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/github.com/neilghosh/simple-node-service:$_BUILD_NUM',
-                '--cache-from', 'gcr.io/$PROJECT_ID/github.com/neilghosh/simple-node-service:5f298d9',
-    '.' ]
+            '--cache-from', 'gcr.io/$PROJECT_ID/github.com/neilghosh/simple-node-service:5f298d9',
+            '.' ]
 substitutions:
     _BUILD_NUM: $SHORT_SHA    
 images:
