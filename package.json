@@ -13,12 +13,13 @@
   "license": "ISC",
   "dependencies": {
     "core-js": "^3.9.1",
-    "express": "4.17.1"
+    "express": "4.17.1",
+    "pg": "^8.8.0"
   },
   "devDependencies": {
-    "regenerator-runtime": "^0.13.7",
     "@babel/preset-env": "*",
     "jest": "*",
+    "regenerator-runtime": "^0.13.7",
     "supertest": "6.1.3"
   }
 }

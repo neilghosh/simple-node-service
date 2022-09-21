@@ -1,5 +1,6 @@
 import express from "express";
 import { fetchData } from "./webproxy.js";
+import { dbConnect } from "./db.js";
 
 const app = express();
 app.use('/static',express.static('public'))
@@ -8,7 +9,7 @@ app.get("/", (req, res) => {
   fetchData()
     .then((result) => {
       console.log(result.statusCode);
-      res.write('CCD Success '+result.statusCode);
+      res.write('Hyderabad CCD Success '+result.statusCode);
     })
     .catch((result) => {
       console.log('Failed '+result.statusCode);
@@ -19,5 +20,9 @@ app.get("/", (req, res) => {
       res.end(); //end the response
     });
 });
+app.get("/hit", (req, res) => {
+    console.log(`Request Came ${req.ip}`);
+    dbConnect();
+  });
 
 export { app as server };

@@ -5,6 +5,6 @@ describe("GET /", function () {
   it("responds success", function (done) {
     request(server)
       .get("/")
-      .expect(200,'CCD Success 200', done)      
+      .expect(200,'Hyderabad CCD Success 200', done)      
   });
 });
