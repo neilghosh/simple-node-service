@@ -16,7 +16,7 @@ spec:
       - name: gke-cloud-sql-app
         # Replace <LOCATION> with your Artifact Registry location (e.g., us-central1).
         # Replace <YOUR_PROJECT_ID> with your project ID.
-        image: gcr.io/demoneil/github.com/neilghosh/simple-node-service:pr-5
+        image: gcr.io/demoneil/github.com/neilghosh/simple-node-service:c67f2a1
         # This app listens on port 8080 for web traffic by default.
         ports:
         - containerPort: 8080

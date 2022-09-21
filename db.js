@@ -1,7 +1,7 @@
 import pg from 'pg'
 
 const { Client } = pg
-function dbConnect() {
+async function dbConnect() {
     const client = new Client({
         user: process.env.DB_USER,
         host: process.env.INSTANCE_HOST,
@@ -9,11 +9,15 @@ function dbConnect() {
         password: process.env.DB_PASS,
         port: 5432,
     })
-    client.connect()
-    client.query('SELECT NOW()', (err, res) => {
-        console.log(err, res)
-        client.end()
-    })
-};
+    try {
+        await client.connect();
+        const now = await client.query("SELECT NOW()");
+        await client.end();
 
+        return now;
+    } catch (error) {
+        console.log(error);
+        return error;
+    }
+}
 export { dbConnect as dbConnect };
