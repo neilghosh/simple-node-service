@@ -1,10 +1,10 @@
 import pg from 'pg'
 
 const { Client } = pg
-async function dbConnect() {
+async function dbConnect(dbhost) {
     const client = new Client({
         user: process.env.DB_USER,
-        host: process.env.INSTANCE_HOST,
+        host: dbhost,
         database: process.env.DB_NAME,
         password: process.env.DB_PASS,
         port: 5432,

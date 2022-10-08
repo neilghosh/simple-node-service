@@ -32,7 +32,17 @@ app.get("/hit", (req, res) => {
     //     })
 
     (async () => {
-        const result = await dbConnect();
+        const result = await dbConnect(process.env.INSTANCE_HOST);
+        console.log("Time with pool: " + JSON.stringify(result));
+        res.write(JSON.stringify(result));
+        res.end();
+        //res.send(200);
+      })();
+});
+app.get("/hit-bouncer", (req, res) => {
+    console.log(`Request Came ${req.ip}`);
+    (async () => {
+        const result = await dbConnect('bouncer-svc.default.svc.cluster.local');
         console.log("Time with pool: " + JSON.stringify(result));
         res.write(JSON.stringify(result));
         res.end();
