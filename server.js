@@ -26,7 +26,6 @@ app.get("/hit", (req, res) => {
 
     (async () => {
         const result = await dbConnect(process.env.INSTANCE_HOST);
-        logStats(results);
         console.log("result " + JSON.stringify(result));
         res.write(JSON.stringify(result));
         res.end();
@@ -36,7 +35,6 @@ app.get("/hit-bouncer", (req, res) => {
     console.log(`Request Came ${req.ip}`);
     (async () => {
         const result = await dbConnect('bouncer-svc.default.svc.cluster.local');
-        logStats(results)
         console.log("result " + JSON.stringify(result));
         res.write(JSON.stringify(result));
         res.end();
