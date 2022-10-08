@@ -33,7 +33,7 @@ app.get("/hit", (req, res) => {
 app.get("/hit-bouncer", (req, res) => {
     console.log(`Request Came ${req.ip}`);
     (async () => {
-        const result = await dbConnect('bouncer-svc.default.svc.cluster.local');
+        const result = await dbConnect('bouncer-svc.default.svc.cluster.local',req.query.rows);
         console.log("result " + JSON.stringify(result));
         res.write(JSON.stringify(result));
         res.end();
