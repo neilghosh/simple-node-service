@@ -13,7 +13,7 @@ async function dbConnect(dbhost) {
         var startTime = performance.now();
         await client.connect();
         var endConnect = performance.now()
-        const now = await client.query("SELECT NOW()");
+        const now = await client.query("select generate_series(1, 200)");
         var endQuery = performance.now()
         let connectTime = endConnect - startTime;
         let queryTime = endQuery - startTime;
@@ -25,7 +25,7 @@ async function dbConnect(dbhost) {
         result.overallTime = overallTime;
         result.data = now.row;
         result.rowCount = now.rowCount;
-        return now;
+        return result;
     } catch (error) {
         console.log(error);
         return error;
