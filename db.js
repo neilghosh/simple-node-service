@@ -19,11 +19,11 @@ async function dbConnect(dbhost) {
         let queryTime = endQuery - startTime;
         let overallTime = endQuery - startTime;
         await client.end();
-        let result;
+        let result = {};
         result.connectTime = connectTime;
         result.queryTime = queryTime;
         result.overallTime = overallTime;
-        result.data = now.row;
+        result.data = now.rows;
         result.rowCount = now.rowCount;
         return result;
     } catch (error) {
