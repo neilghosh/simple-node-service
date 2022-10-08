@@ -3,6 +3,7 @@ import { fetchData } from "./webproxy.js";
 import { dbConnect } from "./db.js";
 
 const app = express();
+
 app.use('/static', express.static('public'))
 app.get("/", (req, res) => {
     console.log(`Request Came ${req.ip}`);
@@ -22,31 +23,23 @@ app.get("/", (req, res) => {
 });
 app.get("/hit", (req, res) => {
     console.log(`Request Came ${req.ip}`);
-    // dbConnect().then((result) => {
-    //     console.log(result);
-    //     res.write('DB Result' + result);
-    // })
-    //     .catch((result) => {
-    //         console.log('Failed ' + result);
-    //         res.send(500);
-    //     })
 
     (async () => {
         const result = await dbConnect(process.env.INSTANCE_HOST);
-        console.log("Time with pool: " + JSON.stringify(result));
+        logStats(results);
+        console.log("result " + JSON.stringify(result));
         res.write(JSON.stringify(result));
         res.end();
-        //res.send(200);
       })();
 });
 app.get("/hit-bouncer", (req, res) => {
     console.log(`Request Came ${req.ip}`);
     (async () => {
         const result = await dbConnect('bouncer-svc.default.svc.cluster.local');
-        console.log("Time with pool: " + JSON.stringify(result));
+        logStats(results)
+        console.log("result " + JSON.stringify(result));
         res.write(JSON.stringify(result));
         res.end();
-        //res.send(200);
       })();
 });
 
