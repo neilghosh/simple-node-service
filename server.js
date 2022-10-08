@@ -23,9 +23,8 @@ app.get("/", (req, res) => {
 });
 app.get("/hit", (req, res) => {
     console.log(`Request Came ${req.ip}`);
-
     (async () => {
-        const result = await dbConnect(process.env.INSTANCE_HOST);
+        const result = await dbConnect(process.env.INSTANCE_HOST, req.query.rows);
         console.log("result " + JSON.stringify(result));
         res.write(JSON.stringify(result));
         res.end();

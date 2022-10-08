@@ -2,7 +2,9 @@ import pg from 'pg'
 import {performance} from 'perf_hooks';
 
 const { Client } = pg
-async function dbConnect(dbhost) {
+async function dbConnect(dbhost,rows) {
+    rows = rows == undefined?200:rows
+    let params = [rows];
     const client = new Client({
         user: process.env.DB_USER,
         host: dbhost,
@@ -14,7 +16,8 @@ async function dbConnect(dbhost) {
         var startTime = performance.now();
         await client.connect();
         var endConnect = performance.now()
-        const now = await client.query("select generate_series(1, 200)");
+        let query = 'select generate_series(1, $1)';
+        const now = await client.query(query, params);
         var endQuery = performance.now()
         let connectTime = endConnect - startTime;
         let queryTime = endQuery - endConnect;
