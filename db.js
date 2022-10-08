@@ -1,5 +1,5 @@
 import pg from 'pg'
-const { performance } = require('perf_hooks');
+import {performance} from 'perf_hooks';
 
 const { Client } = pg
 async function dbConnect(dbhost) {
@@ -17,7 +17,7 @@ async function dbConnect(dbhost) {
         const now = await client.query("select generate_series(1, 200)");
         var endQuery = performance.now()
         let connectTime = endConnect - startTime;
-        let queryTime = endQuery - startTime;
+        let queryTime = endQuery - endConnect;
         let overallTime = endQuery - startTime;
         await client.end();
         let result = {};
