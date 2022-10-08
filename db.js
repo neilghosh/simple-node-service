@@ -1,4 +1,5 @@
 import pg from 'pg'
+const { performance } = require('perf_hooks');
 
 const { Client } = pg
 async function dbConnect(dbhost) {
