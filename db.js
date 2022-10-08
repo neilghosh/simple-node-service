@@ -27,7 +27,7 @@ async function dbConnect(dbhost,rows) {
         result.connectTime = connectTime;
         result.queryTime = queryTime;
         result.overallTime = overallTime;
-        result.data = now.rows;
+        result.data = now.rows[0];
         result.rowCount = now.rowCount;
         return result;
     } catch (error) {
